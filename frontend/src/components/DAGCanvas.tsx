@@ -73,7 +73,7 @@ export default function DAGCanvas({ plan, liveStatus, onNodeClick }: Props) {
     if (!plan) return;
     setNodes(planToNodes(plan, liveStatus));
     setEdges(planToEdges(plan));
-  }, [plan, liveStatus]);
+  }, [plan, liveStatus, setNodes, setEdges]);
 
   if (!plan) {
     return (

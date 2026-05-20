@@ -49,7 +49,7 @@ export default function ExecutionMonitor() {
     if (last?.type === "step_status" && last.step_id && last.status) {
       setLiveNodeStatus(last.step_id, last.status as "pending" | "running" | "success" | "failed");
     }
-  }, [logs.length, setLiveNodeStatus]);
+  }, [logs, setLiveNodeStatus]);
 
   // Derive active panel: auto-switch to profile when results arrive unless user picked logs
   const rightPanel: RightPanel =

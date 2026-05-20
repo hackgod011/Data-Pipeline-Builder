@@ -21,6 +21,9 @@ export function useWebSocket(executionId: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
   const retriesRef = useRef(0);
   const finalStatusRef = useRef<string | null>(null);
+  // Ref holds the latest connect so onclose can schedule a retry without
+  // the self-referencing circular declaration that ESLint flags.
+  const connectRef = useRef<() => void>(() => {});
 
   const connect = useCallback(() => {
     if (!executionId) return;
@@ -48,11 +51,16 @@ export function useWebSocket(executionId: string | null) {
       retriesRef.current += 1;
       const delay = Math.min(1000 * 2 ** retriesRef.current, 30_000);
       setIsReconnecting(true);
-      setTimeout(connect, delay);
+      setTimeout(() => connectRef.current(), delay);
     };
 
     ws.onerror = () => ws.close();
   }, [executionId]);
+
+  // Keep ref in sync so the onclose closure always calls the latest version
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   useEffect(() => {
     if (!executionId) return;
