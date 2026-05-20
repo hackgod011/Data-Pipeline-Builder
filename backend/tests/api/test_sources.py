@@ -1,5 +1,5 @@
 import io
-import pytest
+import asyncio
 
 CSV_BYTES = b"name,age\nAlice,30\nBob,25\n"
 
@@ -66,7 +66,7 @@ async def test_source_preview(client):
         files={"files": ("test.csv", io.BytesIO(CSV_BYTES), "text/csv")},
     )
     sid = up.json()["source_ids"][0]
-    import asyncio; await asyncio.sleep(0.2)
+    await asyncio.sleep(0.2)
     resp = await client.get(f"/api/v1/sources/{sid}/preview")
     assert resp.status_code in {200, 425}  # 425 = not ready yet
 

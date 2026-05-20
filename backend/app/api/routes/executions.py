@@ -118,7 +118,7 @@ async def _run_execution(execution_id: str, code: str) -> None:
 
     log_lines = (result.stdout + "\n" + result.stderr).strip().splitlines()
     # Strip internal PIPEFORGE markers from the visible log buffer
-    visible_lines = [l for l in log_lines if not l.startswith("PIPEFORGE:")]
+    visible_lines = [line for line in log_lines if not line.startswith("PIPEFORGE:")]
     log_buffer = "\n".join(visible_lines[-LOG_BUFFER_MAX:])
 
     # Run data quality profiler on the output file if execution succeeded

@@ -1,6 +1,4 @@
-import pytest
-from pathlib import Path
-from app.services.executor import run_pipeline_code, ExecutionResult
+from app.services.executor import run_pipeline_code
 
 
 def test_simple_code_executes_and_returns_success(tmp_path):

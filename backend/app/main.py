@@ -8,6 +8,12 @@ import app.models.pipeline   # noqa: F401
 import app.models.execution  # noqa: F401
 import app.models.user       # noqa: F401
 import app.models.schedule   # noqa: F401
+from app.api.routes import auth as auth_router
+from app.api.routes import sources as sources_router
+from app.api.routes import pipelines as pipelines_router
+from app.api.routes import executions as executions_router
+from app.api.routes import ws as ws_router
+from app.api.routes import schedules as schedules_router
 
 
 @asynccontextmanager
@@ -53,22 +59,11 @@ async def _catch_all(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-from app.api.routes import auth as auth_router
 app.include_router(auth_router.router)
-
-from app.api.routes import sources as sources_router
 app.include_router(sources_router.router)
-
-from app.api.routes import pipelines as pipelines_router
 app.include_router(pipelines_router.router)
-
-from app.api.routes import executions as executions_router
 app.include_router(executions_router.router)
-
-from app.api.routes import ws as ws_router
 app.include_router(ws_router.router)
-
-from app.api.routes import schedules as schedules_router
 app.include_router(schedules_router.router)
 
 

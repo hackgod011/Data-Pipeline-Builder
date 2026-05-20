@@ -1,6 +1,5 @@
 import pytest
-from pathlib import Path
-from app.services.schema_detector import detect_schema, SchemaResult, SchemaColumn
+from app.services.schema_detector import detect_schema, SchemaResult
 
 SMALL_CSV = b"name,age,salary\nAlice,30,50000\nBob,,60000\nCharlie,25,45000\n"
 THRESHOLD_BYTES = 10 * 1024 * 1024  # 10 MB

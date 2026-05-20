@@ -166,7 +166,6 @@ async def preview_source(
     if source.processing_status != "ready":
         raise HTTPException(status_code=425, detail="Source is still processing")
 
-    import pandas as pd
     from app.services.schema_detector import _read_pandas
 
     file_type = source.file_type

@@ -19,7 +19,8 @@ export default function ExecutionMonitor() {
   const { executionId } = useParams<{ executionId: string }>();
   const navigate = useNavigate();
   const { plan, liveNodeStatus, setLiveNodeStatus, setPlan } = usePipelineStore();
-  const [rightPanel, setRightPanel] = useState<RightPanel>("logs");
+  // null = not explicitly chosen; auto-derive from data
+  const [userSelectedPanel, setUserSelectedPanel] = useState<RightPanel | null>(null);
 
   const { data: execution } = useQuery({
     queryKey: ["execution", executionId],
@@ -50,9 +51,9 @@ export default function ExecutionMonitor() {
     }
   }, [logs.length, setLiveNodeStatus]);
 
-  useEffect(() => {
-    if (execution?.output_profile) setRightPanel("profile");
-  }, [execution?.output_profile]);
+  // Derive active panel: auto-switch to profile when results arrive unless user picked logs
+  const rightPanel: RightPanel =
+    userSelectedPanel ?? (execution?.output_profile ? "profile" : "logs");
 
   const status = (finalStatus ?? execution?.status ?? "pending") as "pending" | "running" | "success" | "failed";
   const outputFilename = execution?.output_file_path
@@ -108,7 +109,7 @@ export default function ExecutionMonitor() {
             {(["logs", "profile"] as RightPanel[]).map((panel) => (
               <button
                 key={panel}
-                onClick={() => setRightPanel(panel)}
+                onClick={() => setUserSelectedPanel(panel)}
                 disabled={panel === "profile" && !execution?.output_profile}
                 className={`px-4 py-2.5 text-xs font-medium transition-colors relative disabled:opacity-30 ${
                   rightPanel === panel ? "text-white" : "text-white/30 hover:text-white/60"
