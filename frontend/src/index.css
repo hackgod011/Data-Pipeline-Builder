@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Fonts ────────────────────────────────────────────── */
+:root {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Space base ───────────────────────────────────────── */
+html, body {
+  background-color: #000000;
+  color: #F0F0F2;
+  /* Sparse star-field: tiny bright dots at semi-random positions */
+  background-image:
+    radial-gradient(ellipse at 20% 20%,  rgba(99,102,241,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%,  rgba(99,102,241,0.05) 0%, transparent 50%),
+    /* star dots */
+    radial-gradient(1.5px 1.5px at  7%  12%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 17%   5%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 28%  48%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 43%  22%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 53%   8%, rgba(255,255,255,0.60) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 62%  35%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 71%  65%, rgba(255,255,255,0.50) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 82%  18%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 91%  44%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 96%   3%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35%  82%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 58%  91%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 78%  88%, rgba(255,255,255,0.50) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 12%  73%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 47%  57%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 89%  72%, rgba(255,255,255,0.30) 0%, transparent 100%);
+  background-attachment: fixed;
+}
+
+/* ── Autofill override (prevents browser white paint) ─── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #09090F inset !important;
+  -webkit-text-fill-color: #F0F0F2 !important;
+  caret-color: #F0F0F2;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
+
+/* ── React Flow ───────────────────────────────────────── */
+.react-flow__renderer { background: #000 !important; }
+.react-flow__background { background: #000 !important; }
+
+/* ── Monospace ────────────────────────────────────────── */
+code, pre, .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+/* ── Star glow utility ────────────────────────────────── */
+.star-glow {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.25), 0 0 20px rgba(99,102,241,0.15);
+}
+.star-glow-sm {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.2), 0 0 10px rgba(99,102,241,0.1);
+}

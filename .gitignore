@@ -1,0 +1,47 @@
+# ─── Secrets & environment ──────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Databases ──────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── Python ─────────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+
+# ─── Node / Frontend build ──────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+
+# ─── Runtime data (user uploads & pipeline outputs) ─────────────────────────────
+uploads/
+outputs/
+
+# ─── OS artifacts ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDE ────────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ─── Session / planning files (kept outside repo in PipeForge-Internal/) ─────────
+handoff.md
+INTELLIGENT_DATA_PIPELINE_BUILDER_SPEC.md
+docs/
+data/
