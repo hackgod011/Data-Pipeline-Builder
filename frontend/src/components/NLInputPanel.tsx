@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { type DataSource } from "../api/client";
+import TemplatesModal from "./TemplatesModal";
 
 interface Props {
   sources: DataSource[];
@@ -23,11 +24,18 @@ export default function NLInputPanel({
   generateError,
 }: Props) {
   const [prompt, setPrompt] = useState("");
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const readySources = sources.filter((s) => s.processing_status === "ready");
 
   return (
     <div className="flex flex-col h-full border-r border-forge-border bg-forge-surface overflow-hidden">
+      {showTemplates && (
+        <TemplatesModal
+          onSelect={(p) => { setPrompt(p); setShowTemplates(false); }}
+          onClose={() => setShowTemplates(false)}
+        />
+      )}
       {/* Sources section */}
       <div className="p-4 border-b border-forge-border">
         <div className="flex items-center justify-between mb-3">
@@ -73,7 +81,15 @@ export default function NLInputPanel({
 
       {/* Prompt section */}
       <div className="flex flex-col flex-1 p-4 gap-3 overflow-hidden">
-        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Describe your pipeline</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Describe your pipeline</p>
+          <button
+            onClick={() => setShowTemplates(true)}
+            className="text-[10px] text-indigo-400 hover:text-indigo-300 transition-colors"
+          >
+            Use Template
+          </button>
+        </div>
         <textarea
           className="flex-1 min-h-0 p-3 text-sm bg-forge-bg border border-forge-border rounded-lg resize-none text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           placeholder="e.g. Join sales with customers on customer_id, filter North region, sum revenue by product category"

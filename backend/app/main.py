@@ -2,6 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.core.limiter import limiter
 from app.core.config import settings
 from app.core.database import engine, Base
 import app.models.pipeline   # noqa: F401
@@ -14,7 +17,7 @@ from app.api.routes import pipelines as pipelines_router
 from app.api.routes import executions as executions_router
 from app.api.routes import ws as ws_router
 from app.api.routes import schedules as schedules_router
-
+from app.api.routes import templates as templates_router
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -36,6 +39,9 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="PipeForge API", version="0.1.0", lifespan=lifespan)
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -43,6 +49,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    return response
 
 
 @app.exception_handler(Exception)
@@ -65,6 +82,7 @@ app.include_router(pipelines_router.router)
 app.include_router(executions_router.router)
 app.include_router(ws_router.router)
 app.include_router(schedules_router.router)
+app.include_router(templates_router.router)
 
 
 @app.get("/health")
