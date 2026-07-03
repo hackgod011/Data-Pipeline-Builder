@@ -59,7 +59,7 @@ Skip this if the ~50s cold start on first visit is acceptable — the app always
 
 ```
 git push origin main
-   ├─ GitHub Actions  → lint + 62 tests + type-check + Docker build
+   ├─ GitHub Actions  → lint + 77 tests + type-check + Docker build
    ├─ Render          → rebuilds & redeploys the backend automatically
    └─ Vercel          → rebuilds & redeploys the frontend automatically
 ```

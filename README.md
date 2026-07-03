@@ -15,10 +15,22 @@
   runs it safely in a sandbox, and streams live execution logs with a data quality report.
 </p>
 
+<p align="center">
+  <a href="https://data-pipeline-builder.vercel.app">
+    <img src="https://img.shields.io/badge/🌐_LIVE_DEMO-data--pipeline--builder.vercel.app-8A2BE2?style=for-the-badge">
+  </a>
+</p>
+
+<p align="center">
+  <b><a href="https://data-pipeline-builder.vercel.app">👉 Try it live — no install needed</a></b><br>
+  <sub>Backend runs on Render's free tier — the first request after 15 idle minutes takes ~50s to wake up.</sub>
+</p>
+
 ---
 
 ## 📋 Table of Contents
 
+- 🌐 [Live Demo](#-live-demo)
 - 🔥 [Problem Statement](#-problem-statement)
 - ✨ [Features](#-features)
 - 🧠 [System Architecture](#-system-architecture)
@@ -29,6 +41,21 @@
 - 📁 [Project Structure](#-project-structure)
 - 🔄 [CI/CD](#-cicd)
 - 🌍 [Free Deployment](DEPLOYMENT.md)
+
+---
+
+## 🌐 Live Demo
+
+**Frontend:** [https://data-pipeline-builder.vercel.app](https://data-pipeline-builder.vercel.app) — hosted on Vercel (global CDN, always on)
+**Backend API:** [https://pipeforge-backend-pol0.onrender.com/docs](https://pipeforge-backend-pol0.onrender.com/docs) — FastAPI on Render (Docker), interactive Swagger docs
+
+Create a free account on the live site and build a pipeline from plain English in under a minute.
+
+> **Free-tier notes:** the backend sleeps after 15 idle minutes and wakes in ~50s on the next request.
+> Storage is ephemeral — accounts and uploads reset when the service redeploys.
+
+Every push to `main` auto-redeploys both halves (GitHub Actions CI → Render + Vercel).
+Deployment is fully reproducible from [`render.yaml`](render.yaml) + [`frontend/vercel.json`](frontend/vercel.json) — see [DEPLOYMENT.md](DEPLOYMENT.md) for the step-by-step guide.
 
 ---
 
@@ -58,6 +85,7 @@ And even when pipelines are built, there's no easy way to monitor their quality 
 - 🛡 **AST Sandbox** — Code is validated at the AST level before execution; 60-second subprocess timeout
 - 📊 **Automatic Data Quality Report** — Post-execution report with null rates, schema coverage, row counts
 - 🤖 **Provider-Agnostic LLM** — Works with Groq (free), Gemini, or Anthropic via LiteLLM — swap with one env var
+- 🔁 **LLM Fallback Chain** — Backup models kick in automatically on outages, deprecations, or rate limits
 - 📂 **Multi-Format Ingestion** — Upload CSV, Excel, JSON, or Parquet
 - 🕒 **Pipeline History** — Full execution history with re-run and code inspection
 - 🐳 **Docker-Ready** — Single `docker compose up` for a full production stack
@@ -121,6 +149,7 @@ And even when pipelines are built, there's no easy way to monitor their quality 
 | Database | SQLite (dev) |
 | CI/CD | GitHub Actions |
 | Deployment | Docker + Docker Compose |
+| Hosting | Render (backend, Docker) + Vercel (frontend, CDN) — [live](https://data-pipeline-builder.vercel.app) |
 
 ---
 
@@ -189,7 +218,7 @@ cd backend
 pytest tests/ -v
 ```
 
-**62 tests** covering all API endpoints, services (profiler, executor, NL parser, code generator, schema detector), and the AST sandbox.
+**77 tests** covering all API endpoints, services (profiler, executor, NL parser, code generator, schema detector), and the AST sandbox.
 
 ---
 
@@ -212,7 +241,7 @@ pytest tests/ -v
 │   │   │   ├── schema_detector.py   Pandas / DuckDB schema analysis
 │   │   │   └── profiler.py          Post-execution data quality scoring
 │   │   └── api/routes/              FastAPI route handlers
-│   ├── tests/                       62 pytest tests
+│   ├── tests/                       77 pytest tests
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/
@@ -237,7 +266,7 @@ GitHub Actions runs on every push to `main` / `dev` and on all pull requests:
 
 | Step | Check |
 |---|---|
-| Backend | `ruff` lint + `pytest` (62 tests) |
+| Backend | `ruff` lint + `pytest` (77 tests) |
 | Frontend | `eslint` + TypeScript type-check + `vite build` |
 | Docker | Builds both images to catch Dockerfile regressions |
 
