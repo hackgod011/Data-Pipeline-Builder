@@ -28,6 +28,7 @@
 - 🧪 [Running Tests](#-running-tests)
 - 📁 [Project Structure](#-project-structure)
 - 🔄 [CI/CD](#-cicd)
+- 🌍 [Free Deployment](DEPLOYMENT.md)
 
 ---
 

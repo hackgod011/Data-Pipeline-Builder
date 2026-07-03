@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     large_file_threshold_mb: int = 10
 
     # LLM — set the key matching your chosen provider
-    llm_model: str = "gemini/gemini-2.0-flash-lite"  # change prefix to switch provider
+    llm_model: str = "groq/openai/gpt-oss-120b"  # change prefix to switch provider
+    # Comma-separated backup models tried in order if llm_model fails (deprecation,
+    # outage, rate limit). Defaults stay on the same Groq account/key so a single
+    # model being decommissioned never takes the feature down.
+    llm_fallbacks: str = "groq/openai/gpt-oss-20b,groq/qwen/qwen3-32b"
     gemini_api_key: str = ""        # gemini/...  models
     groq_api_key: str = ""          # groq/...    models  (free tier, recommended)
     anthropic_api_key: str = ""     # claude-...  models

@@ -63,40 +63,68 @@ def build_schema_context(schema_context: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _set_api_key() -> None:
-    """Push the right env var for whichever provider is configured."""
-    model = settings.llm_model
-    if model.startswith("groq/"):
-        if settings.groq_api_key:
-            os.environ["GROQ_API_KEY"] = settings.groq_api_key
-        elif not os.environ.get("GROQ_API_KEY"):
-            raise RuntimeError("GROQ_API_KEY is not configured. Set it in the .env file.")
-    elif model.startswith("gemini/"):
-        if settings.gemini_api_key:
-            os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
-        elif not os.environ.get("GEMINI_API_KEY"):
-            raise RuntimeError("GEMINI_API_KEY is not configured. Set it in the .env file.")
-    elif model.startswith("claude") or model.startswith("anthropic/"):
-        if settings.anthropic_api_key:
-            os.environ["ANTHROPIC_API_KEY"] = settings.anthropic_api_key
-        elif not os.environ.get("ANTHROPIC_API_KEY"):
-            raise RuntimeError("ANTHROPIC_API_KEY is not configured. Set it in the .env file.")
-    elif model.startswith("openrouter/"):
-        if settings.openrouter_api_key:
-            os.environ["OPENROUTER_API_KEY"] = settings.openrouter_api_key
-        elif not os.environ.get("OPENROUTER_API_KEY"):
-            raise RuntimeError("OPENROUTER_API_KEY is not configured. Set it in the .env file.")
+# Maps a model prefix to the (settings attr, env var) that holds its API key.
+_PROVIDER_KEYS: list[tuple[tuple[str, ...], str, str]] = [
+    (("groq/",), "groq_api_key", "GROQ_API_KEY"),
+    (("gemini/",), "gemini_api_key", "GEMINI_API_KEY"),
+    (("claude", "anthropic/"), "anthropic_api_key", "ANTHROPIC_API_KEY"),
+    (("openrouter/",), "openrouter_api_key", "OPENROUTER_API_KEY"),
+]
+
+
+def _ensure_provider_key(model: str) -> bool:
+    """Push the API key env var for `model`'s provider.
+
+    Returns True if a key is available (or the provider is unknown, so we let
+    LiteLLM decide), False if the provider is recognised but no key is set — in
+    which case the caller skips this model rather than crashing the whole chain.
+    """
+    for prefixes, attr, env_var in _PROVIDER_KEYS:
+        if model.startswith(prefixes):
+            key = getattr(settings, attr, "") or os.environ.get(env_var)
+            if key:
+                os.environ[env_var] = key
+                return True
+            return False
+    return True  # unknown prefix — let LiteLLM handle auth
+
+
+def _model_chain() -> list[str]:
+    """Primary model followed by configured fallbacks, de-duplicated in order."""
+    chain = [settings.llm_model]
+    for m in settings.llm_fallbacks.split(","):
+        m = m.strip()
+        if m and m not in chain:
+            chain.append(m)
+    return chain
 
 
 async def _call_llm(messages: list[dict]) -> str:
-    _set_api_key()
-    response = await litellm.acompletion(
-        model=settings.llm_model,
-        messages=messages,
-        temperature=0.1,
-        timeout=60,
-    )
-    return response.choices[0].message.content or ""
+    last_error: Exception | None = None
+    attempted = 0
+    for model in _model_chain():
+        if not _ensure_provider_key(model):
+            continue  # no key configured for this provider; try the next model
+        attempted += 1
+        try:
+            response = await litellm.acompletion(
+                model=model,
+                messages=messages,
+                temperature=0.1,
+                timeout=60,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:  # deprecation, outage, rate limit — fall back
+            last_error = e
+
+    if attempted == 0:
+        raise RuntimeError(
+            "No API key is configured for LLM_MODEL or any fallback. "
+            "Set the matching provider key in the .env file."
+        )
+    raise RuntimeError(
+        f"All configured LLM models failed. Last error: {last_error}"
+    ) from last_error
 
 
 def _parse_response(
