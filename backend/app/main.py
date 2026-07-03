@@ -44,7 +44,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -65,7 +65,7 @@ async def add_security_headers(request: Request, call_next):
 @app.exception_handler(Exception)
 async def _catch_all(request: Request, exc: Exception) -> JSONResponse:
     origin = request.headers.get("origin", "")
-    allow_origin = origin if origin in settings.cors_origins else settings.cors_origins[0]
+    allow_origin = origin if origin in settings.cors_origins_list else settings.cors_origins_list[0]
     return JSONResponse(
         status_code=500,
         content={"detail": str(exc)},

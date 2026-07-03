@@ -25,7 +25,13 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""    # openrouter/... models
 
     # CORS — comma-separated in env: CORS_ORIGINS=http://localhost:5173,https://myapp.com
-    cors_origins: list[str] = ["http://localhost:5173"]
+    # Kept as str because pydantic-settings JSON-decodes list fields from env vars,
+    # which crashes on a plain URL. Use cors_origins_list for the parsed value.
+    cors_origins: str = "http://localhost:5173"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     # Auth (Phase 5)
     secret_key: str = "dev-secret-change-in-production"
