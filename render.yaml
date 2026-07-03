@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: pipeforge-backend
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: LLM_MODEL
+        value: groq/openai/gpt-oss-120b
+      - key: LLM_FALLBACKS
+        value: groq/openai/gpt-oss-20b,groq/qwen/qwen3-32b
+      - key: GROQ_API_KEY
+        sync: false # paste your key in the Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false # base64 32-byte key — see .env.example for the generate command
+      - key: CORS_ORIGINS
+        sync: false # set to your Vercel frontend URL, e.g. https://pipeforge.vercel.app
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./pipeforge.db
+      - key: UPLOAD_DIR
+        value: /app/uploads
+      - key: OUTPUT_DIR
+        value: /app/outputs
